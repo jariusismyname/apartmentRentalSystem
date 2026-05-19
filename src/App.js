@@ -5,7 +5,7 @@ import PropertyDetails from './pages/PropertyDetails';
 import LandlordDashboard from './pages/LandlordDashboard';
 import AddProperty from './pages/AddProperty';
 import AdminPayments from './pages/AdminPayments';
-import TenantDashboard from './pages/TenantDashboard'; // New Page
+import TenantDashboard from './pages/TenantDashboard';
 import Login from './pages/Login';
 import { mockProperties } from './mockData';
 
@@ -23,7 +23,6 @@ function App() {
   const [applications, setApplications] = useState(() => {
     const savedApps = localStorage.getItem('rental_applications');
     return savedApps ? JSON.parse(savedApps) : [
-      // Mock application for the tenant so there's data to see immediately
       { id: 1, name: 'Alex Tenant', email: 'user@renthub.com', propertyTitle: 'Downtown Apartment', status: 'Approved' }
     ];
   });
@@ -36,6 +35,19 @@ function App() {
     ];
   });
 
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = localStorage.getItem('rental_messages');
+    return savedMessages ? JSON.parse(savedMessages) : [
+      { id: 1, senderName: 'Alex Tenant', senderEmail: 'user@renthub.com', propertyTitle: 'Downtown Apartment', text: 'Is underground garage parking included in the base rent price?', date: '2026-05-19' }
+    ];
+  });
+
+  // 1. New Bookmarks Wishlist State Array
+  const [favorites, setFavorites] = useState(() => {
+    const savedFavs = localStorage.getItem('rental_favorites');
+    return savedFavs ? JSON.parse(savedFavs) : [];
+  });
+
   useEffect(() => {
     if (currentUser) localStorage.setItem('rental_user', JSON.stringify(currentUser));
     else localStorage.removeItem('rental_user');
@@ -44,6 +56,8 @@ function App() {
   useEffect(() => localStorage.setItem('rental_properties', JSON.stringify(properties)), [properties]);
   useEffect(() => localStorage.setItem('rental_applications', JSON.stringify(applications)), [applications]);
   useEffect(() => localStorage.setItem('rental_payments', JSON.stringify(payments)), [payments]);
+  useEffect(() => localStorage.setItem('rental_messages', JSON.stringify(messages)), [messages]);
+  useEffect(() => localStorage.setItem('rental_favorites', JSON.stringify(favorites)), [favorites]); // Sync favorites
 
   const handleLogin = (user) => setCurrentUser(user);
   const handleLogout = () => setCurrentUser(null);
@@ -54,13 +68,29 @@ function App() {
     setApplications(prev => prev.map(app => app.id === id ? { ...app, status: newStatus } : app));
   };
 
-  // 1. New function for tenants to submit payments
   const addPayment = (newPayment) => {
     setPayments(prev => [{ ...newPayment, id: Date.now(), status: 'Pending' }, ...prev]);
   };
 
   const updatePaymentStatus = (id, newStatus) => {
     setPayments(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
+  };
+
+  const addMessage = (newMessage) => {
+    setMessages(prev => [{ ...newMessage, id: Date.now(), date: new Date().toISOString().split('T')[0] }, ...prev]);
+  };
+
+  // 2. State Toggle Core Logic Mapping Utility Function
+  const toggleFavorite = (propertyId) => {
+    if (!currentUser) return;
+    setFavorites(prev => {
+      const exists = prev.some(f => f.propertyId === propertyId && f.userEmail === currentUser.email);
+      if (exists) {
+        return prev.filter(f => !(f.propertyId === propertyId && f.userEmail === currentUser.email));
+      } else {
+        return [...prev, { id: Date.now(), propertyId, userEmail: currentUser.email }];
+      }
+    });
   };
 
   return (
@@ -71,16 +101,14 @@ function App() {
           <div style={styles.links}>
             <Link to="/" style={styles.link}>Find Homes</Link>
             
-            {/* Admin Links */}
             {currentUser?.role === 'landlord' && (
               <>
-                <Link to="/dashboard" style={styles.link}>Applications</Link>
+                <Link to="/dashboard" style={styles.link}>Dashboard</Link>
                 <Link to="/payments" style={styles.link}>Payments</Link>
                 <Link to="/add-property" style={styles.addPropLink}>+ Add Listing</Link>
               </>
             )}
 
-            {/* Tenant Links */}
             {currentUser?.role === 'tenant' && (
               <Link to="/my-hub" style={styles.link}>My Hub</Link>
             )}
@@ -100,32 +128,18 @@ function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<PropertyList properties={properties} />} />
-        <Route path="/property/:id" element={<PropertyDetails properties={properties} addApplication={addApplication} currentUser={currentUser} />} />
+        {/* Pass down bookmark properties into main dashboard map layout catalog array hooks */}
+        <Route path="/" element={<PropertyList properties={properties} favorites={favorites} toggleFavorite={toggleFavorite} currentUser={currentUser} />} />
+        
+        <Route path="/property/:id" element={<PropertyDetails properties={properties} addApplication={addApplication} currentUser={currentUser} addMessage={addMessage} />} />
         <Route path="/login" element={<Login onLogin={handleLogin} currentUser={currentUser} />} />
         
-        {/* Landlord Routes */}
-      {/* Replace the old /dashboard line with this: */}
-<Route 
-  path="/dashboard" 
-  element={
-    currentUser?.role === 'landlord' ? (
-      <LandlordDashboard 
-        applications={applications} 
-        updateStatus={updateApplicationStatus} 
-        properties={properties} // Pass down the properties list
-        setProperties={setProperties} // Pass down the updater hook
-      />
-    ) : (
-      <Navigate to="/login" />
-    )
-  } 
-/>
+        <Route path="/dashboard" element={currentUser?.role === 'landlord' ? <LandlordDashboard applications={applications} updateStatus={updateApplicationStatus} properties={properties} setProperties={setProperties} messages={messages} /> : <Navigate to="/login" />} />
         <Route path="/add-property" element={currentUser?.role === 'landlord' ? <AddProperty addProperty={addProperty} /> : <Navigate to="/login" />} />
         <Route path="/payments" element={currentUser?.role === 'landlord' ? <AdminPayments payments={payments} updateStatus={updatePaymentStatus} /> : <Navigate to="/login" />} />
         
-        {/* Tenant Route */}
-        <Route path="/my-hub" element={currentUser?.role === 'tenant' ? <TenantDashboard currentUser={currentUser} applications={applications} payments={payments} addPayment={addPayment} /> : <Navigate to="/login" />} />
+        {/* Pass downstream links to the Tenant dashboard layer */}
+        <Route path="/my-hub" element={currentUser?.role === 'tenant' ? <TenantDashboard currentUser={currentUser} applications={applications} payments={payments} addPayment={addPayment} favorites={favorites} toggleFavorite={toggleFavorite} properties={properties} /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
