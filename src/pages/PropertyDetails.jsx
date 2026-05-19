@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { mockProperties } from '../mockData';
-
+ 
 // 1. NOTICE THIS: We are accepting the addApplication function here
-export default function PropertyDetails({ addApplication }) {
+export default function PropertyDetails({ properties,addApplication }) {
   const { id } = useParams();
-  const property = mockProperties.find((p) => p.id === parseInt(id));
-
+   const property = properties.find((p) => p.id === parseInt(id));
   const [showForm, setShowForm] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
