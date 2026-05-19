@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function TenantDashboard({ currentUser, applications, payments, addPayment, favorites = [], toggleFavorite, properties }) {
-  const [rentAmount, setRentAmount] = useState(1500);
+export default function TenantDashboard({ currentUser, applications, payments, addPayment, favorites = [], toggleFavorite, properties, isMobile }) {
+    const [rentAmount, setRentAmount] = useState(1500);
 
   const myApplications = applications.filter(app => app.name === currentUser.name || app.email === currentUser.email);
   const myPayments = payments.filter(p => p.tenantName === currentUser.name);
@@ -33,8 +33,12 @@ export default function TenantDashboard({ currentUser, applications, payments, a
         ) : (
           <div style={styles.favGrid}>
             {mySavedHomes.map(property => (
-              <div key={property.id} style={styles.miniCard}>
-                <div>
+<div key={property.id} style={{ 
+     ...styles.miniCard, 
+     flexDirection: isMobile ? 'column' : 'row', 
+     alignItems: isMobile ? 'flex-start' : 'center', 
+     gap: isMobile ? '15px' : '0' 
+   }}>                <div>
                   <h4 style={styles.miniTitle}>{property.title}</h4>
                   <p style={styles.miniMeta}>📍 {property.location} &nbsp;|&nbsp; 💰 <strong>${property.price}/mo</strong></p>
                 </div>
@@ -89,8 +93,8 @@ export default function TenantDashboard({ currentUser, applications, payments, a
         {myPayments.length === 0 ? (
           <p style={styles.emptyText}>No payment history found.</p>
         ) : (
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
+<div style={{ ...styles.tableContainer, overflowX: 'auto' }}>
+              <table style={styles.table}>
               <thead>
                 <tr style={styles.tableHead}>
                   <th style={styles.th}>Date</th>

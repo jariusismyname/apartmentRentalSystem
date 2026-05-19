@@ -52,27 +52,25 @@ export default function AddProperty({ addProperty }) {
             <label style={styles.label}>Monthly Rent ($)</label>
             <input type="number" name="price" required placeholder="2400" value={formData.price} onChange={handleInputChange} style={styles.input} />
           </div>
-          <div style={{ ...styles.inputGroup, flex: 2 }}>
+          
+        </div>
+<div style={{ ...styles.inputGroup, flex: 2 }}>
             <label style={styles.label}>Location Address / City</label>
             <input type="text" name="location" required placeholder="Downtown, Chicago" value={formData.location} onChange={handleInputChange} style={styles.input} />
           </div>
-        </div>
-
-        <div style={styles.row}>
-          <div style={styles.inputGroup}>
+        <div style={styles.inputGroup}>
             <label style={styles.label}>Bedrooms</label>
             <input type="number" name="bedrooms" required placeholder="2" value={formData.bedrooms} onChange={handleInputChange} style={styles.input} />
           </div>
-          <div style={styles.inputGroup}>
+
+        <div style={styles.inputGroup}>
             <label style={styles.label}>Bathrooms</label>
             <input type="number" name="bathrooms" required placeholder="1.5" value={formData.bathrooms} onChange={handleInputChange} style={styles.input} />
           </div>
-          <div style={styles.inputGroup}>
+<div style={styles.inputGroup}>
             <label style={styles.label}>Square Footage (sq ft)</label>
             <input type="number" name="area" required placeholder="1100" value={formData.area} onChange={handleInputChange} style={styles.input} />
           </div>
-        </div>
-
         <div style={styles.inputGroup}>
           <label style={styles.label}>Property Showcase Image Link (URL)</label>
           <input type="url" name="image" placeholder="Paste an unsplash picture URL or leave blank for default photo" value={formData.image === 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80' ? '' : formData.image} onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80' }))} style={styles.input} />

@@ -8,8 +8,8 @@ const GALLERY_IMAGES = [
   { id: 'img3', url: 'https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcRFRDRGbzVNxa4OFRgVXNArKQC5oJQLuVa_Su4uynalD2MKxlhMGmhkGrCoyo_gDRBnaHBB5-1DzLqauAI', label: 'Master Bedroom' }
 ];
 
-export default function PropertyDetails({ properties, addApplication, currentUser, addMessage }) {
-  const { id } = useParams();
+export default function PropertyDetails({ properties, addApplication, currentUser, addMessage, isMobile }) {
+    const { id } = useParams();
   const property = properties.find(p => p.id === Number(id));
 
   // Gallery slider state track hook pointer
@@ -104,8 +104,10 @@ export default function PropertyDetails({ properties, addApplication, currentUse
         </div>
       </div>
 
-      <div style={styles.layoutSplitGrid}>
-        {/* Left Column: Information specs card detailing the target room parameters */}
+<div style={{
+     ...styles.layoutSplitGrid,
+     gridTemplateColumns: isMobile ? '1fr' : '1.6fr 1fr'
+   }}>        {/* Left Column: Information specs card detailing the target room parameters */}
         <div>
           <div style={styles.mainTitleBlock}>
             <span style={styles.verifiedBadge}>✓ Verified RentHub Listing</span>
@@ -113,7 +115,10 @@ export default function PropertyDetails({ properties, addApplication, currentUse
             <p style={styles.propLoc}>📍 {property.location}</p>
           </div>
 
-          <div style={styles.specDeckRow}>
+          <div style={{
+     ...styles.specDeckRow,
+     gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)'
+   }}>
             <div style={styles.specCard}><strong>🛏️ {property.bedrooms}</strong><br/><span>Bedrooms</span></div>
             <div style={styles.specCard}><strong>🛁 {property.bathrooms || 1}</strong><br/><span>Bathrooms</span></div>
             <div style={styles.specCard}><strong>📏 {property.sqft || '1,120'}</strong><br/><span>Sq. Footage</span></div>

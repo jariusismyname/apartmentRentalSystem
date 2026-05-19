@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function PropertyList({ properties, favorites = [], toggleFavorite, currentUser }) {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function PropertyList({ properties, favorites = [], toggleFavorite, currentUser, isMobile }) {  const [searchTerm, setSearchTerm] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [minBedrooms, setMinBedrooms] = useState('any');
 
@@ -28,8 +27,12 @@ export default function PropertyList({ properties, favorites = [], toggleFavorit
         <p style={{ margin: 0, color: '#666' }}>Discover verified listings matching your lifestyle criteria.</p>
       </header>
 
-      <div style={styles.filterConsole}>
-        <div style={styles.filterGroup}>
+<div style={{
+     ...styles.filterConsole, 
+     gridTemplateColumns: isMobile ? '1fr' : '2fr 2fr 1.5fr 0.8fr',
+     gap: isMobile ? '15px' : '20px'
+   }}>
+            <div style={styles.filterGroup}>
           <label style={styles.label}>Where are you looking?</label>
           <input type="text" placeholder="e.g., Downtown, Austin, Studio..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={styles.input} />
         </div>
@@ -66,10 +69,9 @@ export default function PropertyList({ properties, favorites = [], toggleFavorit
 
             return (
               <div key={property.id} style={styles.card}>
-                <div style={styles.imagePlaceholder}>
-                  🏢 {property.location.split(',')[0]} Listing
-                  
-                  {/* Floating Action Button Layer */}
+                                  <img style={styles.imagePlaceholder} src={property.image} alt="" style={styles.heroImage} />
+                      <div >
+                   {/* Floating Action Button Layer */}
                   {currentUser?.role === 'tenant' && (
                     <button 
                       onClick={() => toggleFavorite(property.id)} 
