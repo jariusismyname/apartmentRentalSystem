@@ -1,8 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-// We pass the property object as a prop to make this component reusable
 const PropertyCard = ({ property }) => {
-  const { title, price, location, image, bedrooms, bathrooms, area } = property;
+  // 1. ADDED 'id' to this line so property.id exists
+  const { id, title, price, location, image, bedrooms, bathrooms, area } = property;
 
   return (
     <div style={styles.card}>
@@ -22,19 +23,16 @@ const PropertyCard = ({ property }) => {
           <span>🛁 {bathrooms} Baths</span>
           <span>📐 {area} sq ft</span>
         </div>
-     
-        <button 
-          style={styles.button} 
-          onClick={() => alert(`Viewing details for ${title}`)}
-        >
+        
+        {/* 2. FIXED: Removed the <button> tag. Using Link as the button. */}
+        <Link to={`/property/${id}`} style={styles.button}>
           View Details
-        </button>
-        </div> 
+        </Link>
+      </div> 
     </div>
   );
 };
 
-// Simple baseline styles to make it look clean out of the box
 const styles = {
   card: {
     width: '300px',
@@ -48,7 +46,7 @@ const styles = {
   },
   imageContainer: {
     position: 'relative',
-    height: 'auto',
+    height: '200px', // Set a fixed height for consistency
     width: '100%',
   },
   image: {
@@ -93,6 +91,7 @@ const styles = {
     marginBottom: '16px',
   },
   button: {
+    display: 'block', // Makes the Link behave like a button
     width: '100%',
     padding: '10px',
     backgroundColor: '#28a745',
@@ -101,6 +100,9 @@ const styles = {
     borderRadius: '6px',
     fontWeight: 'bold',
     cursor: 'pointer',
+    textDecoration: 'none', // Removes the blue underline from the Link
+    textAlign: 'center',    // Centers the text
+    boxSizing: 'border-box' // Ensures padding doesn't break width
   }
 };
 
