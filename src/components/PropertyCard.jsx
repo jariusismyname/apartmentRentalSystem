@@ -22,14 +22,14 @@ const PropertyCard = ({ property }) => {
           <span>🛁 {bathrooms} Baths</span>
           <span>📐 {area} sq ft</span>
         </div>
-        
+     
         <button 
           style={styles.button} 
           onClick={() => alert(`Viewing details for ${title}`)}
         >
           View Details
         </button>
-      </div>
+        </div> 
     </div>
   );
 };
@@ -38,6 +38,7 @@ const PropertyCard = ({ property }) => {
 const styles = {
   card: {
     width: '300px',
+    height: '400px',
     borderRadius: '12px',
     overflow: 'hidden',
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -47,7 +48,7 @@ const styles = {
   },
   imageContainer: {
     position: 'relative',
-    height: '200px',
+    height: 'auto',
     width: '100%',
   },
   image: {
